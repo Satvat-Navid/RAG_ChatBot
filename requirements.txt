@@ -1,0 +1,8 @@
+numpy
+langchain
+langchain-community
+faiss-cpu
+openai
+transformers
+sentence-transformers
+streamlit
