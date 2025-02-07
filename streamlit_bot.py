@@ -14,7 +14,7 @@ client = OpenAI(base_url="http://localhost:1234/v1", api_key="not-needed")
 embed = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Loading CSV file
-csv_file="clean_data.csv"
+csv_file="data/clean_data.csv"
 def read_doc(txt_file):
     loader = CSVLoader(file_path=txt_file,
         csv_args={
@@ -33,7 +33,7 @@ def chunk_data(docs, size=1000, overlap=100):
 docs = chunk_data(document)
 
 # Check for Vectorstore
-index_path = "index.faiss"
+index_path = "data/index.faiss"
 if os.path.exists(index_path):
     index = faiss.read_index(index_path)
 else:

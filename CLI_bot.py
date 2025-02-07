@@ -13,7 +13,7 @@ client = OpenAI(base_url="http://localhost:1234/v1", api_key="not-needed")
 embed = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Loading CSV file
-csv_file="clean_data.csv"
+csv_file="data/clean_data.csv"
 def read_doc(txt_file):
     loader = CSVLoader(file_path=txt_file,
         csv_args={
@@ -32,7 +32,7 @@ def chunk_data(docs, size=1000, overlap=100):
 docs = chunk_data(document)
 
 # Check for Vectorstore
-index_path = "index.faiss"
+index_path = "data/index.faiss"
 if os.path.exists(index_path):
     index = faiss.read_index(index_path)
 else:
@@ -78,11 +78,11 @@ while(True):
         response = client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "You are a college chatbot who have to provide information about the college provided as context"},
+                {"role": "system", "content": "You are a helpful college chatbot who have to provide information about the college provided"},
                 {"role": "assistant", "content": context},
                 {"role": "user", "content": user_input}
             ],
-            max_tokens=200,
+            max_tokens=300,
             stream=True
         )
         # print(response.choices[0].message.content)
