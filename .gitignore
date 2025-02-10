@@ -2,7 +2,8 @@ env/
 bot.ipynb
 data_cleaning.ipynb
 bot_web.py
-app.py
 semantic_search.ipynb
 testbot.py
 tests.py
+testss.py
+.env

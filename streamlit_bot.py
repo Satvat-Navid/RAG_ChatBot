@@ -11,7 +11,7 @@ import streamlit as st
 
 # Hosting local client (LM studio), work on openai API
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="not-needed")
-embed = SentenceTransformer('bert-base-nli-mean-tokens')
+embed = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Loading CSV file
 csv_file="data/clean_data.csv"
