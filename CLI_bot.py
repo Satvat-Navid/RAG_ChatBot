@@ -10,7 +10,7 @@ from openai import OpenAI
 
 # Hosting local client (LM studio), work on openai API
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="not-needed")
-embed = SentenceTransformer('bert-base-nli-mean-tokens')
+embed = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Loading CSV file
 csv_file="data/clean_data.csv"
@@ -25,22 +25,21 @@ def read_doc(txt_file):
     return document
 document = read_doc(csv_file)
 # Chunking the document
-def chunk_data(docs, size=1000, overlap=100):
+def chunk_data(docs, size=800, overlap=80):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=size, chunk_overlap=overlap)
     doc = text_splitter.split_documents(docs)
     return doc
-docs = chunk_data(document)
+chunks = chunk_data(document)
 
 # Check for Vectorstore
 index_path = "data/index.faiss"
 if os.path.exists(index_path):
     index = faiss.read_index(index_path)
 else:
-
     # Creating the Vector Embeddings
     enbedding_list = []
-    for i in range(len(docs)):
-        resposnse = embed.encode(docs[i].page_content)
+    for i in range(len(chunks)):
+        resposnse = embed.encode(chunks[i].page_content)
         enbedding_list.append(resposnse)
     embeddings_df_arr = np.array(enbedding_list).astype('float32')
 
@@ -60,7 +59,7 @@ while(True):
     if(text.lower() == 'q'):
         break
     text_embed = embed.encode([text])
-    text_arr = np.array(text_embed)
+    text_arr = np.array(text_embed).astype('float32')
     faiss.normalize_L2(text_arr)
 
     # Similarity Search
@@ -69,7 +68,7 @@ while(True):
     # Making the context
     string=[]
     for i in range(len(I[0])):
-        string.append((docs[I[0][i]].page_content))
+        string.append((chunks[I[0][i]].page_content))
     context=" ".join(string)
 
     #funtion for calling chat model
@@ -78,8 +77,8 @@ while(True):
         response = client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "You are a helpful college chatbot who have to provide information about the college provided"},
-                {"role": "assistant", "content": context},
+                {"role": "system", "content": "You are a helpful chatbot, provide concise information from the context."},
+                {"role": "user", "content": f"context : {context}"},
                 {"role": "user", "content": user_input}
             ],
             max_tokens=300,
